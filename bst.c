@@ -52,7 +52,7 @@ linktree bst_find(linktree root, tn_datatype data)
 	else
 		return root;
 }
-
+*/
 linktree bst_remove(linktree root, tn_datatype n)
 {
 	if(root == NULL)
@@ -89,7 +89,7 @@ linktree bst_remove(linktree root, tn_datatype n)
 	}
 	return root;
 }
-*/
+
 
 int main(void)
 {
