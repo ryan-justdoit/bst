@@ -1,131 +1,114 @@
-///////////////////////////////////////////////////////////
-//
-//  Copyright(C), 2013-2017, GEC Tech. Co., Ltd.
-//
-//  文件: lab/tree/bst.c
-//  日期: 2017-9
-//  描述: BST算法实现代码
-//
-//  作者: Vincent Lin (林世霖)   微信公众号：秘籍酷
-//  技术微店: http://weidian.com/?userid=260920190
-//  技术交流: 260492823（QQ群）
-//
-///////////////////////////////////////////////////////////
-
-#include "head4tree.h"
 #include "drawtree.h"
 
-linktree bst_insert(linktree root, linktree new)
-{
-	if(new == NULL)
-		return root;
-
-	if(root == NULL)
-		return new;
-
-	if(new->data > root->data)
-	{
-		root->rchild = bst_insert(root->rchild, new);
-	}
-	else if(new->data < root->data)
-	{
-		root->lchild = bst_insert(root->lchild, new);
-	}
-	else
-	{
-		printf("%ld is already exist.\n", new->data);
-	}
-
-	return root;
-}
-
 /*
-linktree bst_find(linktree root, tn_datatype data)
+treenode
 {
-	if(root == NULL)
-		return NULL;
+	int data;
+	treenode *lchild;
+	treenode *rchild;
 
-	if(data < root->data)
-		return bst_find(root->lchild, data);
-	else if(data > root->data)
-		return bst_find(root->rchild, data);
-	else
-		return root;
-}
+	int height;
+}treendoe,*linktree;
 */
-linktree bst_remove(linktree root, tn_datatype n)
-{
-	if(root == NULL)
-		return NULL;
 
-	if(n < root->data)
-		root->lchild = bst_remove(root->lchild, n);
-	else if(n > root->data)
-		root->rchild = bst_remove(root->rchild, n);
+void bst_insert2(treenode **proot, treenode *new)
+{
+	if(*proot == NULL)
+	{
+		*proot = new;
+		return;
+	}
+
+
+	if(new->data < (*proot)->data)
+		bst_insert2(&(*proot)->lchild, new);
+	else
+		bst_insert2(&(*proot)->rchild, new);
+
+
+	if(height((*proot)->lchild) - height((*proot)->rchild) > 1)
+	// ...
+	// ...
+}
+
+void bst_remove2(treenode **proot, int data)
+{
+	if(data < (*proot)->data)
+	{
+		bst_remove2(&(*proot)->lchild, data);
+	}
+	else if(data > (*proot)->data)
+	{
+		bst_remove2(&(*proot)->rchild, data);
+	}
 	else
 	{
-		linktree tmp;
-		if(root->lchild != NULL)
+		if((*proot)->lchild != NULL)
 		{
-			for(tmp=root->lchild; tmp->rchild!=NULL;
-			    tmp=tmp->rchild);
+			// 1
+			treenode *max;
+			for(max=(*proot)->lchild; max->rchild!=NULL; max=max->rchild);
 
-			root->data = tmp->data;
-			root->lchild = bst_remove(root->lchild, tmp->data);
+			// 2
+			(*proot)->data = max->data;
+
+			// 3
+			bst_remove2(&(*proot)->lchild, max->data);
 		}
-		else if(root->rchild != NULL)
+
+		else if((*proot)->rchild != NULL)
 		{
-			for(tmp=root->rchild; tmp->lchild!=NULL;
-			    tmp=tmp->lchild);
+			// 1
+			treenode *min;
+			for(min=(*proot)->rchild; min->lchild!=NULL; min=min->lchild);
 
-			root->data = tmp->data;
-			root->rchild = bst_remove(root->rchild, tmp->data);
+			// 2
+			(*proot)->data = min->data;
+
+			// 3
+			bst_remove2(&(*proot)->rchild, min->data);
 		}
+
 		else
 		{
-			free(root);
-			return NULL;
+			free(*proot);
+			*proot = NULL;
 		}
 	}
-	return root;
-}
 
+
+	// ...
+	// ...
+	// ...
+}
 
 int main(void)
 {
-	linktree root;
-	root = NULL;
-
-	printf("输入大于0的数插入节点\n");
-	printf("输入小于0的数删除节点\n");
-	printf("输入0退出程序\n");
+	treenode *root = NULL;
 
 	int n;
+
 	while(1)
 	{
 		scanf("%d", &n);
 
 		if(n > 0)
 		{
-			linktree new = new_node(n);
-			root = bst_insert(root, new);
+			treenode *new = new_node(n);
+			bst_insert2(&root, new);
 		}
-		/*
+
 		else if(n < 0)
 		{
-			root = bst_remove(root, -n);
+			bst_remove2(&root, -n);
 		}
-		*/
-		if(n == 0)
+
+		else
 			break;
 
-		// 画一个网页显示二叉树的样子
 		draw(root);
-
 	}
 
-	// 用火狐打开网页看看
-	system("firefox *.html &");
-
-	return 0;
+	system("firefox *.html");
 }
+
